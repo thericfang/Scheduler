@@ -1,5 +1,6 @@
 public class Process {
     int a, b, c, m;
+
     public Process(int a, int b, int c, int m) {
         this.a = a;
         this.b = b;
@@ -18,15 +19,20 @@ public class Process {
     public int getM() {
         return m;
     }
-    public int finishingTime() { // TODO: finishing time of process
+    
+    // public int finishingTime() { // TODO: finishing time of process
 
-    }
+    // }
 
-    public int turnaroundTime() { // TODO: turnaround time of process = finishing time - A
+    // public int turnaroundTime() { // TODO: turnaround time of process = finishing time - A
 
-    }
+    // }
 
-    public int iOTime() { //
+    // public int iOTime() { // TODO: compute I/O time -> time in blocked state
 
+    // }
+
+    public String toString() {
+        return "Process Values: A:" + a + "    B:" + b + "    C:" + c + "     M:" + m;
     }
 }
