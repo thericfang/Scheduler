@@ -3,7 +3,6 @@ import java.io.*;
 import java.util.*;
 
 public class Tester {
-    // static ArrayList<ArrayList<Integer>> processes = new ArrayList<ArrayList<Integer>>();
     static int numOfProcesses;
     static ArrayList<Process> processes = new ArrayList<Process>();
     
@@ -12,7 +11,6 @@ public class Tester {
         Scanner kbScanner = new Scanner(System.in); // New Scanner to get file name
         String inputName = kbScanner.nextLine();
         fileReader(inputName);
-        int a, b, c, m;
         for (int i = 0; i < processes.size(); i++) {
             System.out.println(processes.get(i));
         }

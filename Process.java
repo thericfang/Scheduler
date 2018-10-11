@@ -20,17 +20,21 @@ public class Process {
         return m;
     }
     
-    // public int finishingTime() { // TODO: finishing time of process
+    // public double finishingTime() { // TODO: finishing time of process
 
     // }
 
-    // public int turnaroundTime() { // TODO: turnaround time of process = finishing time - A
+    // public double turnaroundTime() { // TODO: turnaround time of process = finishing time - A
 
     // }
 
-    // public int iOTime() { // TODO: compute I/O time -> time in blocked state
+    // public double iOTime() { // TODO: compute I/O time -> time in blocked state
 
     // }
+
+    // public double waitingTime() { //TODO: time in waiting state
+
+    // } 
 
     public String toString() {
         return "Process Values: A:" + a + "    B:" + b + "    C:" + c + "     M:" + m;
