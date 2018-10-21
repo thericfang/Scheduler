@@ -11,8 +11,8 @@ This program is a scheduler that compares four different scheduling algorithms f
 
 ## Use Instructions
 Simply compile the Java file and run it.
-Run with `java Scheduler` for a non-detailed version.
-Run with `java Scheduler --verbose` for a detailed version of every cycle.
+Run with `java Tester [inputname]` for a non-detailed version.
+Run with `java Tester --verbose [inputname]` for a detailed version of every cycle.
 
 Please make sure that the random-numbers file is in the same folder as the program (if using a different random-numbers).
 

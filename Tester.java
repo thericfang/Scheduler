@@ -17,33 +17,29 @@ public class Tester {
     static int quantumCounter = 0;
     static boolean verbose = false;
     static int iOTime = 0;
+    static String inputName;
    
     
     public static void main(String args[]) {
         try {
             if (args != null && args[0].equals("--verbose")) {
                 verbose = true;
+                inputName = args[1];
+                
+            }
+            else {
+                inputName = args[0];
             }
         }
         catch (Exception ex) {
             verbose = false;
         }
-       
-        
-        
-        System.out.println("What is the file name?");
-        Scanner kbScanner = new Scanner(System.in); // New Scanner to get file name
-        String inputName = kbScanner.nextLine();
         runStuff(inputName, 1);
         runStuff(inputName, 2);
         runStuff(inputName, 3);
         runStuff(inputName, 4);
        
-        
-       
-    
-    
-    
+
         
     }
 
