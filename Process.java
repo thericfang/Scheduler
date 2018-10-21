@@ -3,6 +3,7 @@ public class Process {
     int remainingTime;
     int timeOfNext;
     int CPUBurst, IOBurst;
+    int runningTimeToDate = 0;
     int remainingBurstTime;
     int totalIOTime;
     boolean ready, blocked, running;
@@ -17,6 +18,8 @@ public class Process {
     int waitingTime;
     int priority;
     int arrivalTimeToReady;
+    int arrivingTime;
+    int penaltyRatio;
 
     public Process(int a, int b, int c, int m) {
         this.a = a;
@@ -67,7 +70,18 @@ public class Process {
         return "Process Values: A:" + a + "    B:" + b + "    C:" + c + "     M:" + m;
     }
 
-    public int compareTo(Process p) {
+    public int compareTo(Process p, int a) {
+        if (a == 1) {
+            return (p.arrivalTimeToReady - this.arrivalTimeToReady);
+        }
+        else if (a == 2) {
+            return (p.penaltyRatio - this.penaltyRatio);
+        }
+        else 
         return(p.a-this.a);
+        
+    }
+    public int compareTo(Process p) {
+        return compareTo(p, 0);
     }
 }

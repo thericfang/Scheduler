@@ -14,48 +14,36 @@ public class Tester {
     public static int time;
     static int randomCounter = 0;
     static int removedFromBlockCounter = 0;
-    // static Comparator<Process> comparator = new MyComparator();
-    // static PriorityQueue<Process> readyProcesses = new PriorityQueue<Process>(comparator);
-    
+    static int quantumCounter = 0;
+    static boolean verbose = false;
+    static int iOTime = 0;
    
     
     public static void main(String args[]) {
+        try {
+            if (args != null && args[0].equals("--verbose")) {
+                verbose = true;
+            }
+        }
+        catch (Exception ex) {
+            verbose = false;
+        }
+       
+        
+        
         System.out.println("What is the file name?");
         Scanner kbScanner = new Scanner(System.in); // New Scanner to get file name
         String inputName = kbScanner.nextLine();
-        fileReader(inputName);
-        randomNumbersReader();
-        // sortList(arrivingProcesses);
-        Collections.sort(arrivingProcesses, 
-            (o1, o2) -> o2.compareTo(o1));  
-        Collections.sort(readyProcesses, 
-            (o1, o2) -> o2.compareTo(o1));  
-        for (int i = 0; i < arrivingProcesses.size(); i++) {
-            arrivingProcesses.get(i).priority++;
-            if (i == 0) {
-                ;
-            }
-            else if (arrivingProcesses.get(i).a == arrivingProcesses.get(i-1).a) {
-                arrivingProcesses.get(i).priority = arrivingProcesses.get(i).priority+1;
-            }
-        }
-                
-        callScheduler(1);
-        Collections.sort(terminatedProcesses, 
-                    (o1, o2) -> o2.compareTo(o1));
+        runStuff(inputName, 1);
+        runStuff(inputName, 2);
+        runStuff(inputName, 3);
+        runStuff(inputName, 4);
+       
         
-        for (int j = 0; j < arrivingProcesses.size(); j++) {
-            Process temp = arrivingProcesses.get(j);
-            System.out.println("Process " + j);
-            System.out.println("        (A,B,C,M) = (" + temp.a + ", " + temp.b + ", " + temp.c + ", " + temp.m + ")" );
-            System.out.println("        Finishing time: " + temp.finishingTime);
-            System.out.println("        Turnaround time: " + (temp.finishingTime - temp.a));
-            System.out.println("        I/O time: " + temp.totalIOTime);
-            System.out.println("        Waiting time: " + temp.waitingTime);
-            // System.out.println(temp + "   Finishing time: " + temp.finishingTime + " IO Time: " + temp.totalIOTime + " Waiting Time: " + temp.waitingTime);
-
-        }
-        System.out.println("Size of arrivingProcesses: " + arrivingProcesses.size());
+       
+    
+    
+    
         
     }
 
@@ -76,6 +64,8 @@ public class Tester {
                         c = temp.get(2);
                         m = temp.get(3);
                         Process curProcess = new Process(a,b,c,m);
+                        // curProcess.arrivingTime = i;
+
                         arrivingProcesses.add(curProcess);          
                     }
                     
@@ -85,6 +75,12 @@ public class Tester {
                     fileInput.next();
                 }
                
+            }
+
+            Collections.sort(arrivingProcesses, 
+                (o1, o2) -> o2.compareTo(o1));  
+            for (int k = 0; k < arrivingProcesses.size(); k++) {
+                arrivingProcesses.get(k).arrivingTime = k;
             }
             fileInput.close(); 
             
@@ -115,32 +111,81 @@ public class Tester {
                 
                 
                 
-                while (terminatedProcesses.size() != arrivingProcesses.size()) {
+                while (terminatedProcesses.size() != numOfProcesses) {
                 // while (time < 1117) {
-                    printCycles();
+                    if (verbose) {
+                        printCycles();
+                    }
                     doBlockedProcesses(i);
                     doRunningProcesses(i);
                     doArrivingProcesses(i);
                     doReadyProcesses(i);
                     time++;
                 }
+                time = 0;
+                break;
             
             }
-            case 3: {
-               
+            case 2: {
                 
-                
-                
+                    while (terminatedProcesses.size() != numOfProcesses) {
+                        if (verbose) {
+                            printCycles();
+                        }                        
+                        doBlockedProcesses(i);
+                        doRunningProcesses(i);
+                        doArrivingProcesses(i);
+                        doReadyProcesses(i);
+                        time++;
+                    }
+                    time = 0;
+                break;
+                    
 
+            }
+            case 3: {
         
                 while (terminatedProcesses.size() != numOfProcesses) {
+                    if (verbose) {
+                        printCycles();
+                    }                    
                     doBlockedProcesses(i);
                     doRunningProcesses(i);
                     doArrivingProcesses(i);
                     doReadyProcesses(i);
                     time++;
                 }
+                time = 0;
+                
+                break;
             }
+            case 4: {
+                while (terminatedProcesses.size() != numOfProcesses) {
+                    if (verbose) {
+                        printCycles();
+                    }                    
+                    doBlockedProcesses(i);
+                    doRunningProcesses(i);
+                    doArrivingProcesses(i);
+                    doReadyProcesses(i);
+                    time++;
+                }
+                time = 0;
+                break;
+
+            }
+            default: ;
+        }
+        switch (i) {
+            case 1: System.out.println("The scheduling algorithm used was First Come First Served");
+            break;
+            case 2: System.out.println("The scheduling algorithm used was Round Robin");
+            break;
+            case 3: System.out.println("The scheduling algorithm used was Last Come First Served");
+            break;
+            case 4: System.out.println("The scheduling algorithm used was Highest Penalty Ratio First");
+            break;
+            default: ;
         }
         
        
@@ -151,8 +196,107 @@ public class Tester {
         switch (i) { // 1 for FCFS, 2 for RR with quantum 2, 3 for LCFS, 4 for HPRN.
             case 1: {     
                 if (RunningProcess == null && readyProcesses.size() > 0) {
-                    RunningProcess = readyProcesses.get(0);
+                    Process tempProcess = readyProcesses.get(0);
+                    for (int j = 1; j < readyProcesses.size(); j++) {
+                        if (tempProcess.arrivalTimeToReady > readyProcesses.get(j).arrivalTimeToReady) {
+                            tempProcess = readyProcesses.get(j);
+                        }
+                        else if (tempProcess.arrivalTimeToReady == readyProcesses.get(j).arrivalTimeToReady) {
+                            if (tempProcess.arrivingTime > readyProcesses.get(j).arrivingTime) {
+                                tempProcess = readyProcesses.get(j);
+                            }
+                        }
+                    }
+                    RunningProcess = tempProcess;
+                    readyProcesses.remove(tempProcess);   
+                    int temp = randomOS(RunningProcess.b);
+                    if (temp > RunningProcess.remainingTime) {
+                        RunningProcess.CPUBurst = RunningProcess.remainingTime;
+                    }
+                    else {
+                        RunningProcess.CPUBurst = temp;
+                    }
                     
+                    RunningProcess.state = "Running";
+                    RunningProcess.remainingBurstTime = RunningProcess.CPUBurst;
+                    RunningProcess.outOfRunning = time + RunningProcess.CPUBurst;
+                }    
+                for (Process p : readyProcesses) {
+                    p.remainingBurstTime = 0;
+                    p.waitingTime++;
+                }
+                break;  
+            }
+            case 2: {
+                if (RunningProcess == null && readyProcesses.size() > 0) {
+                    Process tempProcess = readyProcesses.get(0);
+                    for (int j = 1; j < readyProcesses.size(); j++) {
+                        if (tempProcess.arrivalTimeToReady > readyProcesses.get(j).arrivalTimeToReady) {
+                            tempProcess = readyProcesses.get(j);
+                        }
+                        else if (tempProcess.arrivalTimeToReady == readyProcesses.get(j).arrivalTimeToReady) {
+                            if (tempProcess.arrivingTime > readyProcesses.get(j).arrivingTime) {
+                                tempProcess = readyProcesses.get(j);
+                            }
+                        }
+                    }
+                    RunningProcess = tempProcess;
+                    readyProcesses.remove(tempProcess);  
+
+                    if (RunningProcess.CPUBurst == 0) {
+                        int temp = randomOS(RunningProcess.b);
+                        if (temp > RunningProcess.remainingTime) {
+                            RunningProcess.CPUBurst = RunningProcess.remainingTime;
+                        }
+                        else {
+                            RunningProcess.CPUBurst = temp;
+                        }
+                        if (RunningProcess.CPUBurst < 2) {
+                            RunningProcess.remainingBurstTime = 1;
+                        }
+                        else {
+                            RunningProcess.remainingBurstTime = 2;
+                        }
+                        RunningProcess.state = "Running";
+                        RunningProcess.outOfRunning = time + RunningProcess.CPUBurst;
+                        RunningProcess.IOBurst = RunningProcess.CPUBurst * RunningProcess.m;
+                    }
+                    else {
+
+                        RunningProcess.state = "Running";
+                        if (RunningProcess.CPUBurst < 2) {
+                            RunningProcess.remainingBurstTime = 1;
+                        }
+                        else {
+                            RunningProcess.remainingBurstTime = 2;
+                        }
+                        RunningProcess.outOfRunning = time + RunningProcess.CPUBurst;
+                    }
+                }
+                for (Process p : readyProcesses) {
+                    p.remainingBurstTime = 0;
+                    p.waitingTime++;
+                }
+                break;
+            }
+           
+            case 3: {
+                if (RunningProcess == null && readyProcesses.size() > 0) {
+                    Collections.sort(readyProcesses,
+                    (o1, o2) -> o1.compareTo(o2, 1));
+                    Process tempProcess = readyProcesses.get(0);
+                    for (int j = 1; j < readyProcesses.size(); j++) {
+                        if (tempProcess.arrivalTimeToReady < readyProcesses.get(j).arrivalTimeToReady) {
+                            tempProcess = readyProcesses.get(j);
+                        }
+                        else if (tempProcess.arrivalTimeToReady == readyProcesses.get(j).arrivalTimeToReady) {
+                            if (tempProcess.arrivingTime > readyProcesses.get(j).arrivingTime) {
+                                tempProcess = readyProcesses.get(j);
+                            }
+                        }
+                    }
+                    RunningProcess = tempProcess;
+                    readyProcesses.remove(tempProcess);
                     
                     int temp = randomOS(RunningProcess.b);
                     if (temp > RunningProcess.remainingTime) {
@@ -165,73 +309,144 @@ public class Tester {
                     RunningProcess.state = "Running";
                     RunningProcess.remainingBurstTime = RunningProcess.CPUBurst;
                     RunningProcess.outOfRunning = time + RunningProcess.CPUBurst;
-                    readyProcesses.remove(0);
+                    
 
                 }
     
-                    
                     for (Process p : readyProcesses) {
                         p.remainingBurstTime = 0;
                         p.waitingTime++;
                     }
-                
-                
+                break;
             }
-
-            case 3: {
+            case 4: {
                 if (RunningProcess == null && readyProcesses.size() > 0) {
-                    Collections.sort(readyProcesses, 
-                    (o1, o2) -> o1.compareTo(o2));
+                    for (Process k : readyProcesses) {
+                        k.penaltyRatio = time/Math.max(k.runningTimeToDate,1);
+                    }
+                    Collections.sort(readyProcesses,
+                    (o1, o2) -> o1.compareTo(o2, 2));
                     
-                    RunningProcess = readyProcesses.get(readyProcesses.size()-1);
+                    Process tempProcess = readyProcesses.get(0);
+                    RunningProcess = tempProcess;
+                    readyProcesses.remove(tempProcess);
                     
-                    RunningProcess.CPUBurst = randomOS(RunningProcess.getB());
-                    RunningProcess.remainingBurstTime = RunningProcess.CPUBurst;
+                    int temp = randomOS(RunningProcess.b);
+                    if (temp > RunningProcess.remainingTime) {
+                        RunningProcess.CPUBurst = RunningProcess.remainingTime;
+                    }
+                    else {
+                        RunningProcess.CPUBurst = temp;
+                    }
+                    
                     RunningProcess.state = "Running";
+                    RunningProcess.remainingBurstTime = RunningProcess.CPUBurst;
                     RunningProcess.outOfRunning = time + RunningProcess.CPUBurst;
-                    RunningProcess.waitingTime += (time  - RunningProcess.outOfBlocked);
-                    readyProcesses.remove(readyProcesses.size()-1);
+                    
+
                 }
-                
+    
+                    for (Process p : readyProcesses) {
+                        p.remainingBurstTime = 0;
+                        p.waitingTime++;
+                    }
+                break;
+
             }
-            default: 
+            default: ;
         }
     }
 
     public static void doRunningProcesses(int i) {
-        if (RunningProcess != null) {
-            if (RunningProcess.outOfRunning == time) {
-                RunningProcess.IOBurst = RunningProcess.CPUBurst * RunningProcess.m;
-                RunningProcess.outOfBlocked = RunningProcess.IOBurst + time;
-                RunningProcess.state = "Blocked";
-                RunningProcess.remainingBurstTime = RunningProcess.IOBurst;
-                RunningProcess.remainingTime -= RunningProcess.CPUBurst;
-                // System.out.println("Running Process Remaining Time: " + RunningProcess.remainingTime);
-                if (RunningProcess.remainingTime <= 0) {
-                    RunningProcess.finishingTime = time;
-                    RunningProcess.state = "Terminated";
-                    RunningProcess.remainingBurstTime = 0;
-                    terminatedProcesses.add(RunningProcess);
-                    RunningProcess = null;
+        switch (i) {
+            case 1:
+            case 3: 
+            case 4: {
+                if (RunningProcess != null) {
+                    if (RunningProcess.outOfRunning == time) {
+                        RunningProcess.IOBurst = RunningProcess.CPUBurst * RunningProcess.m;
+                        RunningProcess.outOfBlocked = RunningProcess.IOBurst + time;
+                        RunningProcess.state = "Blocked";
+                        RunningProcess.remainingBurstTime = RunningProcess.IOBurst;
+                        RunningProcess.remainingTime -= RunningProcess.CPUBurst;
+                        RunningProcess.runningTimeToDate++;
+                        RunningProcess.CPUBurst = 0;
+                        // System.out.println("Running Process Remaining Time: " + RunningProcess.remainingTime);
+                        if (RunningProcess.remainingTime <= 0) {
+                            RunningProcess.finishingTime = time;
+                            RunningProcess.state = "Terminated";
+                            RunningProcess.remainingBurstTime = 0;
+                            terminatedProcesses.add(RunningProcess);
+                            RunningProcess = null;
+                        }
+                        else {
+                            blockedProcesses.add(RunningProcess);
+                            RunningProcess = null;
+                        }
+                    
+                    }
+                    else {
+                        RunningProcess.runningTimeToDate++;
+                        RunningProcess.remainingBurstTime--;
+                    }
                 }
-                else {
-                    blockedProcesses.add(RunningProcess);
-                    RunningProcess = null;
-                }
-               
+                break;
             }
-            else RunningProcess.remainingBurstTime--;
-            
-            
-            
+            case 2: {
+                if (RunningProcess != null) {
+                    if (RunningProcess.outOfRunning == time) {
+                        RunningProcess.outOfBlocked = RunningProcess.IOBurst + time;
+                        RunningProcess.state = "Blocked";
+                        RunningProcess.remainingBurstTime = RunningProcess.IOBurst;
+                        RunningProcess.remainingTime -= RunningProcess.IOBurst / RunningProcess.m;
+                        RunningProcess.runningTimeToDate++;
+                        // System.out.println("Running Process Remaining Time: " + RunningProcess.remainingTime);
+                        if (RunningProcess.remainingTime <= 0) {
+                            RunningProcess.finishingTime = time;
+                            RunningProcess.state = "Terminated";
+                            RunningProcess.remainingBurstTime = 0;
+                            terminatedProcesses.add(RunningProcess);
+                            RunningProcess = null;
+                        }
+                        else {
+                            blockedProcesses.add(RunningProcess);
+                            RunningProcess = null;
+                        }
+                    
+                    }
+                    
+                    else {
+                        RunningProcess.runningTimeToDate++;
+                        RunningProcess.remainingBurstTime--;
+                        if (RunningProcess.remainingBurstTime == 0) {
+                            Process temp = RunningProcess;
+                            temp.state = "Ready";
+                            temp.arrivalTimeToReady = time;
+                            temp.CPUBurst = temp.CPUBurst - 2;
+                            readyProcesses.add(temp);
+                            RunningProcess = null;
+                        }
+                        
+                           
+                        
+                        
+                        
+                        
+                    }
+                }
+                break;
+                         
+            }
 
         }
+        
     }
 
     public static void doBlockedProcesses(int i) { //check if out_of_block == current_time where out_of_block = current_time + io_burst 
         switch (i) {
             case 1:
-            case 3: {
+            case 3:
+            case 4: {
                 Iterator<Process> iter = blockedProcesses.iterator();
                 removedFromBlockCounter = 0;
                 while (iter.hasNext()) {
@@ -239,6 +454,7 @@ public class Tester {
                     if (p.outOfBlocked == time) {
                         p.state = "Ready";
                         p.totalIOTime += p.IOBurst;
+                        p.arrivalTimeToReady = time;
                         readyProcesses.add(p);
                         iter.remove();
                         removedFromBlockCounter++;
@@ -247,20 +463,35 @@ public class Tester {
                         p.remainingBurstTime--;
                     }
                 }
-                // if (removedFromBlockCounter > 1) {
-                //     if (readyProcesses.get(readyProcesses.size()-1).priority > readyProcesses.get(readyProcesses.size()-2).priority) {
-                //         Collections.swap(readyProcesses, readyProcesses.size()-1, readyProcesses.size()-2);
-                //     }
-                // }
-                // for (Process p : blockedProcesses) {
-                //     if (p.outOfBlocked == time) {
-                //         p.state = "Ready";
-                //         readyProcesses.add(p);
-                //         blockedProcesses.remove(p);
-
-                        
-                //     }
-                // }
+                
+       
+                break;
+            }
+           
+            case 2: {
+                Iterator<Process> iter = blockedProcesses.iterator();
+                removedFromBlockCounter = 0;
+                if (iter.hasNext()) {
+                    iOTime++;
+                }
+                while (iter.hasNext()) {
+                    Process p = iter.next();
+                    if (p.outOfBlocked == time) {
+                        p.state = "Ready";
+                        p.totalIOTime += p.IOBurst;
+                        p.arrivalTimeToReady = time;
+                        p.remainingBurstTime = 0;
+                        p.CPUBurst = 0;
+                        readyProcesses.add(p);
+                        iter.remove();
+                        removedFromBlockCounter++;
+                    }
+                    else {
+                        p.remainingBurstTime--;
+                    }
+                }
+                
+                break;
             }
             default: ;
         }
@@ -271,26 +502,14 @@ public class Tester {
         for (Process p : arrivingProcesses) {
             if (p.a == time) {
                 p.state = "Ready";
-                readyProcesses.add(p);
+                p.arrivalTimeToReady = time;
+                readyProcesses.add(p);      
                 
             }
             
         }
     }
 
-    // public static void sortList(ArrayList<Process> arrivingProcesses) {
-    //     Process temp;
-    //     for (int i = 0; i < arrivingProcesses.size(); i++) {
-    //         for (int j = 0; j < arrivingProcesses.size(); j++) {
-    //             if (arrivingProcesses.get(j).a < arrivingProcesses.get(j+1).a) {
-    //                 temp = arrivingProcesses.get(j);
-    //                 arrivingProcesses.set(j, arrivingProcesses.get(j+1));
-    //                 arrivingProcesses.set(j+1, temp);
-    //             }
-    //         }
-            
-    //     }
-    // }
     public static int randomOS(int u) {
         
         int random = randomNumList.get(randomCounter);
@@ -301,17 +520,73 @@ public class Tester {
     }
 
     public static void printCycles() {
-        // String pString = "Before cycle " + time + ":";
         System.out.print("Before cycle ");
         System.out.printf("%4d:", time);
-        for (int i = 0; i < arrivingProcesses.size(); i++) {
-            System.out.printf("%-11s", arrivingProcesses.get(i).state);
-            System.out.printf("%-3d", arrivingProcesses.get(i).remainingBurstTime);
+        for (int j = 0; j < arrivingProcesses.size(); j++) {
+            System.out.printf("%-11s", arrivingProcesses.get(j).state);
+            System.out.printf("%-3d", arrivingProcesses.get(j).remainingBurstTime);
             // pString += "    " + arrivingProcesses.get(i).state + "     " + arrivingProcesses.get(i).remainingBurstTime;
         }
         System.out.println("");
         
     }
-   // System.out.println("Running Process Remaining Time: " + RunningProcess.remainingTime);
+    // System.out.println("Running Process Remaining Time: " + RunningProcess.remainingTime);
+    public static void printStuff() {
+        for (int j = 0; j < arrivingProcesses.size(); j++) {
+            Process temp = arrivingProcesses.get(j);
+            System.out.println("Process " + j);
+            System.out.println("        (A,B,C,M) = (" + temp.a + ", " + temp.b + ", " + temp.c + ", " + temp.m + ")" );
+            System.out.println("        Finishing time: " + temp.finishingTime);
+            System.out.println("        Turnaround time: " + (temp.finishingTime - temp.a));
+            System.out.println("        I/O time: " + temp.totalIOTime);
+            System.out.println("        Waiting time: " + temp.waitingTime);
+            // System.out.println(temp + "   Finishing time: " + temp.finishingTime + " IO Time: " + temp.totalIOTime + " Waiting Time: " + temp.waitingTime);
+
+        }
+        System.out.println("Summary Data:");
+        System.out.println("        Finishing Time: " + terminatedProcesses.get(terminatedProcesses.size()-1).finishingTime);
+        int totalCPUTime = 0;
+        int totalIOTime = 0;
+        int totalTurnaroundTime = 0;
+        int totalWaitingTime = 0;
+        for (int k = 0; k < terminatedProcesses.size(); k++) {
+            totalCPUTime += terminatedProcesses.get(k).c;
+            totalTurnaroundTime += (terminatedProcesses.get(k).finishingTime - terminatedProcesses.get(k).a);
+            totalWaitingTime += terminatedProcesses.get(k).waitingTime;
+
+        }
+    
+    
+        System.out.println("        CPU Utilization: " + (double)totalCPUTime/terminatedProcesses.get(terminatedProcesses.size()-1).finishingTime);
+        System.out.println("        I/O Utilization: " + (double)iOTime/terminatedProcesses.get(terminatedProcesses.size()-1).finishingTime);
+        System.out.println("        Throughput: " + (double)numOfProcesses/(terminatedProcesses.get(terminatedProcesses.size()-1).finishingTime)*100);
+        System.out.println("        Average Turnaround Time: " + (double) totalTurnaroundTime / terminatedProcesses.size());
+        System.out.println("        Average Waiting Time: " + (double)totalWaitingTime/terminatedProcesses.size());
+       
+   }
+
+    public static void runStuff(String inputName, int j) {
+        fileReader(inputName);
+        randomNumbersReader();
+        // sortList(arrivingProcesses);
+        Collections.sort(readyProcesses, 
+            (o1, o2) -> o2.compareTo(o1));  
+        for (int i = 0; i < arrivingProcesses.size(); i++) {
+            arrivingProcesses.get(i).priority++;
+            if (i == 0) {
+                ;
+            }
+            else if (arrivingProcesses.get(i).a == arrivingProcesses.get(i-1).a) {
+                arrivingProcesses.get(i).priority = arrivingProcesses.get(i).priority+1;
+            }
+        }
+        callScheduler(j);
+        printStuff();
+        terminatedProcesses.clear();
+        blockedProcesses.clear();
+        readyProcesses.clear();
+        arrivingProcesses.clear();
+        System.out.println("---------------------------------------------");
+    }
     
 }
