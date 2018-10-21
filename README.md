@@ -10,7 +10,7 @@ This program is a scheduler that compares four different scheduling algorithms f
 
 
 ## Use Instructions
-Simply compile the Tester Java file and run it.
+Compile the Tester Java file with `javac Tester.java`.
 Run with `java Tester [inputname]` for a non-detailed version.
 Run with `java Tester --verbose [inputname]` for a detailed version of every cycle.
 
